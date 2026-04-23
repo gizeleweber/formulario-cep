@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulário de Endereço</title>
+  <title>Pesquisa de Deslocamento</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,31 +24,25 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       padding: 2rem 2.5rem;
       width: 100%;
-      max-width: 560px;
+      max-width: 580px;
     }
 
-    .card-header {
-      margin-bottom: 1.75rem;
-    }
+    .card-header { margin-bottom: 1.75rem; }
+    .card-header h1 { font-size: 20px; font-weight: 600; color: #111827; }
+    .card-header p  { font-size: 14px; color: #6b7280; margin-top: 4px; }
 
-    .card-header h1 {
-      font-size: 20px;
+    .section-label {
+      font-size: 11px;
       font-weight: 600;
-      color: #111827;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ca3af;
+      margin-bottom: 14px;
     }
 
-    .card-header p {
-      font-size: 14px;
-      color: #6b7280;
-      margin-top: 4px;
-    }
+    .divider { border: none; border-top: 1px solid #f3f4f6; margin: 1.5rem 0; }
 
-    .form-row {
-      display: grid;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
+    .form-row { display: grid; gap: 16px; margin-bottom: 16px; }
     .form-row.cols-1-2 { grid-template-columns: 1fr 2fr; }
     .form-row.cols-3   { grid-template-columns: 1fr 1fr 1fr; }
     .form-row.cols-2-1 { grid-template-columns: 2fr 1fr; }
@@ -59,11 +53,17 @@
       font-size: 13px;
       font-weight: 500;
       color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
+
+    label .req { color: #ef4444; font-size: 12px; }
 
     input[type="text"],
     input[type="tel"],
-    input[type="email"] {
+    input[type="email"],
+    select {
       height: 40px;
       padding: 0 12px;
       border: 1.5px solid #d1d5db;
@@ -73,9 +73,19 @@
       background: #fff;
       transition: border-color 0.15s, box-shadow 0.15s;
       width: 100%;
+      font-family: inherit;
     }
 
-    input:focus {
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    input:focus, select:focus {
       outline: none;
       border-color: #6366f1;
       box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
@@ -87,92 +97,55 @@
       cursor: default;
     }
 
-    input[readonly]:focus {
-      border-color: #d1d5db;
-      box-shadow: none;
-    }
+    input[readonly]:focus { border-color: #d1d5db; box-shadow: none; }
 
     .cep-wrapper { position: relative; }
-
     .cep-wrapper input { padding-right: 40px; }
 
     .cep-spinner {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: none;
-      width: 16px;
-      height: 16px;
-      border: 2px solid #e5e7eb;
-      border-top-color: #6366f1;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%); display: none;
+      width: 16px; height: 16px;
+      border: 2px solid #e5e7eb; border-top-color: #6366f1;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
     }
-
     @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
-    .cep-status {
-      font-size: 12px;
-      min-height: 16px;
-      margin-top: 3px;
-    }
-
+    .cep-status { font-size: 12px; min-height: 16px; margin-top: 3px; }
     .cep-status.success { color: #059669; }
     .cep-status.error   { color: #dc2626; }
 
-    .divider {
-      border: none;
-      border-top: 1px solid #f3f4f6;
-      margin: 1.5rem 0;
-    }
-
-    .section-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #9ca3af;
-      margin-bottom: 14px;
-    }
+    .other-field { display: none; margin-top: 8px; }
+    .other-field input { width: 100%; }
 
     .btn-submit {
-      width: 100%;
-      height: 44px;
-      background: #6366f1;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 1.5rem;
+      width: 100%; height: 44px;
+      background: #6366f1; color: #fff;
+      border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; margin-top: 1.5rem;
       transition: background 0.15s, transform 0.1s;
     }
-
     .btn-submit:hover  { background: #4f46e5; }
     .btn-submit:active { transform: scale(0.98); }
     .btn-submit:disabled { background: #c7d2fe; cursor: not-allowed; }
 
     .success-banner {
       display: none;
-      background: #ecfdf5;
-      border: 1.5px solid #6ee7b7;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-top: 1.25rem;
-      font-size: 13px;
-      color: #065f46;
+      background: #ecfdf5; border: 1.5px solid #6ee7b7;
+      border-radius: 10px; padding: 16px;
+      margin-top: 1.25rem; font-size: 14px;
+      color: #065f46; text-align: center;
     }
+    .success-banner .icon { font-size: 28px; margin-bottom: 6px; }
+    .success-banner strong { font-weight: 600; display: block; font-size: 15px; }
+    .success-banner span { font-size: 13px; color: #047857; }
 
-    .success-banner strong { font-weight: 600; }
-
-    .success-banner pre {
-      font-family: "Courier New", monospace;
-      font-size: 12px;
-      margin-top: 8px;
-      white-space: pre-wrap;
-      color: #064e3b;
+    .error-banner {
+      display: none;
+      background: #fef2f2; border: 1.5px solid #fca5a5;
+      border-radius: 10px; padding: 12px 16px;
+      margin-top: 1.25rem; font-size: 13px; color: #991b1b;
     }
 
     @media (max-width: 520px) {
@@ -187,87 +160,180 @@
 
 <div class="card">
   <div class="card-header">
-    <h1>Cadastro de endereço</h1>
-    <p>Digite o CEP e os campos serão preenchidos automaticamente.</p>
+    <h1>Pesquisa de deslocamento</h1>
+    <p>Todos os campos são obrigatórios. Digite o CEP e o endereço será preenchido automaticamente.</p>
   </div>
 
-  <form id="form-endereco" novalidate>
+  <form id="form-principal" novalidate>
 
-    <p class="section-label">Localização</p>
+    <p class="section-label">Dados pessoais</p>
+
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="field">
+        <label for="nome">Nome completo <span class="req">*</span></label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required />
+      </div>
+    </div>
 
     <div class="form-row cols-1-2">
       <div class="field">
-        <label for="cep">CEP</label>
+        <label for="telefone">Telefone <span class="req">*</span></label>
+        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required />
+      </div>
+      <div class="field">
+        <label for="email">E-mail <span class="req">*</span></label>
+        <input type="email" id="email" name="email" placeholder="email@exemplo.com" required />
+      </div>
+    </div>
+
+    <hr class="divider" />
+    <p class="section-label">Unidade de negócio</p>
+
+    <div class="form-row" style="grid-template-columns:1fr;">
+      <div class="field">
+        <label for="unidade">Unidade de negócio <span class="req">*</span></label>
+        <select id="unidade" name="unidade" required>
+          <option value="" disabled selected>Selecione...</option>
+          <option>4BTS</option>
+          <option>CSC</option>
+          <option>Nest Travel</option>
+          <option>Pallas</option>
+          <option>Pop Tur</option>
+          <option>Stella Barros</option>
+          <option>Torcida Brasil</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="divider" />
+    <p class="section-label">Endereço residencial</p>
+
+    <div class="form-row cols-1-2">
+      <div class="field">
+        <label for="cep">CEP <span class="req">*</span></label>
         <div class="cep-wrapper">
           <input type="tel" id="cep" name="cep" maxlength="9"
-                 placeholder="00000-000" autocomplete="postal-code" />
+                 placeholder="00000-000" autocomplete="postal-code" required />
           <div class="cep-spinner" id="spinner"></div>
         </div>
         <span class="cep-status" id="cep-status"></span>
       </div>
-
       <div class="field">
-        <label for="logradouro">Logradouro</label>
-        <input type="text" id="logradouro" name="logradouro"
-               placeholder="Rua, Avenida..." readonly />
+        <label for="logradouro">Logradouro <span class="req">*</span></label>
+        <input type="text" id="logradouro" name="logradouro" placeholder="Rua, Avenida..." readonly required />
       </div>
     </div>
 
     <div class="form-row cols-3">
       <div class="field">
-        <label for="numero">Número</label>
-        <input type="text" id="numero" name="numero" placeholder="Ex: 123" />
+        <label for="numero">Número <span class="req">*</span></label>
+        <input type="text" id="numero" name="numero" placeholder="Ex: 123" required />
       </div>
-
       <div class="field">
         <label for="complemento">Complemento</label>
-        <input type="text" id="complemento" name="complemento"
-               placeholder="Apto, Bloco..." />
+        <input type="text" id="complemento" name="complemento" placeholder="Apto, Bloco..." />
       </div>
-
       <div class="field">
-        <label for="bairro">Bairro</label>
-        <input type="text" id="bairro" name="bairro"
-               placeholder="Bairro" readonly />
+        <label for="bairro">Bairro <span class="req">*</span></label>
+        <input type="text" id="bairro" name="bairro" placeholder="Bairro" readonly required />
       </div>
     </div>
 
     <div class="form-row cols-2-1">
       <div class="field">
-        <label for="cidade">Cidade</label>
-        <input type="text" id="cidade" name="cidade"
-               placeholder="Cidade" readonly />
+        <label for="cidade">Cidade <span class="req">*</span></label>
+        <input type="text" id="cidade" name="cidade" placeholder="Cidade" readonly required />
       </div>
-
       <div class="field">
-        <label for="estado">Estado</label>
-        <input type="text" id="estado" name="estado"
-               placeholder="UF" readonly />
+        <label for="estado">Estado <span class="req">*</span></label>
+        <input type="text" id="estado" name="estado" placeholder="UF" readonly required />
       </div>
     </div>
 
     <hr class="divider" />
+    <p class="section-label">Deslocamento</p>
 
-    <p class="section-label">Dados pessoais</p>
-
-    <div class="form-row" style="grid-template-columns: 1fr;">
+    <div class="form-row" style="grid-template-columns:1fr; margin-bottom:8px;">
       <div class="field">
-        <label for="nome">Nome completo</label>
-        <input type="text" id="nome" name="nome" placeholder="Seu nome completo" />
+        <label for="modal">Modal principal utilizado <span class="req">*</span></label>
+        <select id="modal" name="modal" required onchange="toggleOther('modal','modal-outro')">
+          <option value="" disabled selected>Selecione...</option>
+          <option>Carro próprio</option>
+          <option>Moto própria</option>
+          <option>Carona</option>
+          <option>Transporte público (ônibus, metrô, trem, BRT)</option>
+          <option>Aplicativo (Uber, 99, etc.)</option>
+          <option value="Outra">Outra</option>
+        </select>
+        <div class="other-field" id="modal-outro">
+          <input type="text" name="modal_outro" placeholder="Descreva o modal utilizado..." />
+        </div>
       </div>
     </div>
 
-    <div class="form-row cols-1-2">
+    <div class="form-row" style="grid-template-columns:1fr; margin-bottom:8px;">
       <div class="field">
-        <label for="telefone">Telefone</label>
-        <input type="tel" id="telefone" name="telefone"
-               placeholder="(00) 00000-0000" />
+        <label for="tempo_ida">Tempo médio de deslocamento (ida) <span class="req">*</span></label>
+        <select id="tempo_ida" name="tempo_ida" required onchange="toggleOther('tempo_ida','tempo-ida-outro')">
+          <option value="" disabled selected>Selecione...</option>
+          <option>Menos de 30 min</option>
+          <option>30–60 min</option>
+          <option>1h–1h30min</option>
+          <option>1h30–2h</option>
+          <option value="Outra">Outra</option>
+        </select>
+        <div class="other-field" id="tempo-ida-outro">
+          <input type="text" name="tempo_ida_outro" placeholder="Informe o tempo de deslocamento (ida)..." />
+        </div>
       </div>
+    </div>
 
+    <div class="form-row" style="grid-template-columns:1fr; margin-bottom:8px;">
       <div class="field">
-        <label for="email">E-mail</label>
-        <input type="email" id="email" name="email"
-               placeholder="email@exemplo.com" />
+        <label for="tempo_volta">Tempo médio de deslocamento (volta) <span class="req">*</span></label>
+        <select id="tempo_volta" name="tempo_volta" required onchange="toggleOther('tempo_volta','tempo-volta-outro')">
+          <option value="" disabled selected>Selecione...</option>
+          <option>Menos de 30 min</option>
+          <option>30–60 min</option>
+          <option>1h–1h30min</option>
+          <option>1h30–2h</option>
+          <option value="Outra">Outra</option>
+        </select>
+        <div class="other-field" id="tempo-volta-outro">
+          <input type="text" name="tempo_volta_outro" placeholder="Informe o tempo de deslocamento (volta)..." />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row" style="grid-template-columns:1fr; margin-bottom:8px;">
+      <div class="field">
+        <label for="dist_ida">Distância aproximada em km (ida) <span class="req">*</span></label>
+        <select id="dist_ida" name="dist_ida" required onchange="toggleOther('dist_ida','dist-ida-outro')">
+          <option value="" disabled selected>Selecione...</option>
+          <option>0–15 km</option>
+          <option>16–30 km</option>
+          <option>31–45 km</option>
+          <option value="Outra">Outra</option>
+        </select>
+        <div class="other-field" id="dist-ida-outro">
+          <input type="text" name="dist_ida_outro" placeholder="Informe a distância em km (ida)..." />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row" style="grid-template-columns:1fr; margin-bottom:8px;">
+      <div class="field">
+        <label for="dist_volta">Distância aproximada em km (volta) <span class="req">*</span></label>
+        <select id="dist_volta" name="dist_volta" required onchange="toggleOther('dist_volta','dist-volta-outro')">
+          <option value="" disabled selected>Selecione...</option>
+          <option>0–15 km</option>
+          <option>16–30 km</option>
+          <option>31–45 km</option>
+          <option value="Outra">Outra</option>
+        </select>
+        <div class="other-field" id="dist-volta-outro">
+          <input type="text" name="dist_volta_outro" placeholder="Informe a distância em km (volta)..." />
+        </div>
       </div>
     </div>
 
@@ -275,16 +341,23 @@
   </form>
 
   <div class="success-banner" id="success-banner">
+    <div class="icon">✅</div>
     <strong>Formulário enviado com sucesso!</strong>
-    <pre id="dados-enviados"></pre>
+    <span>Obrigado pelo preenchimento. Suas respostas foram registradas.</span>
+  </div>
+
+  <div class="error-banner" id="error-banner">
+    Ocorreu um erro ao enviar. Verifique sua conexão e tente novamente.
   </div>
 </div>
 
 <script>
-  const cepInput   = document.getElementById('cep');
-  const statusEl   = document.getElementById('cep-status');
-  const spinner    = document.getElementById('spinner');
-  const fields     = {
+  const POWER_AUTOMATE_URL = "https://defaultbbcb0dd1f79746fc9124d6d18981e2.12.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9a1e011b6eba414f8d8dfa469b045ddd/triggers/manual/paths/invoke?api-version=1";
+
+  const cepInput = document.getElementById('cep');
+  const statusEl = document.getElementById('cep-status');
+  const spinner  = document.getElementById('spinner');
+  const addr = {
     logradouro: document.getElementById('logradouro'),
     bairro:     document.getElementById('bairro'),
     cidade:     document.getElementById('cidade'),
@@ -296,9 +369,7 @@
     return v.length > 5 ? v.slice(0,5) + '-' + v.slice(5) : v;
   }
 
-  function clearAddress() {
-    Object.values(fields).forEach(f => f.value = '');
-  }
+  function clearAddr() { Object.values(addr).forEach(f => f.value = ''); }
 
   function setStatus(msg, type) {
     statusEl.textContent = msg;
@@ -311,19 +382,15 @@
     try {
       const res  = await fetch(`https://viacep.com.br/ws/${raw}/json/`);
       const data = await res.json();
-      if (data.erro) {
-        clearAddress();
-        setStatus('CEP não encontrado.', 'error');
-        return;
-      }
-      fields.logradouro.value = data.logradouro || '';
-      fields.bairro.value     = data.bairro     || '';
-      fields.cidade.value     = data.localidade || '';
-      fields.estado.value     = data.uf         || '';
+      if (data.erro) { clearAddr(); setStatus('CEP não encontrado.', 'error'); return; }
+      addr.logradouro.value = data.logradouro || '';
+      addr.bairro.value     = data.bairro     || '';
+      addr.cidade.value     = data.localidade || '';
+      addr.estado.value     = data.uf         || '';
       setStatus('Endereço encontrado!', 'success');
       document.getElementById('numero').focus();
-    } catch (e) {
-      clearAddress();
+    } catch {
+      clearAddr();
       setStatus('Erro ao buscar. Verifique o CEP.', 'error');
     } finally {
       spinner.style.display = 'none';
@@ -335,41 +402,101 @@
     setStatus('', '');
     const raw = this.value.replace(/\D/g, '');
     if (raw.length === 8) fetchCep(raw);
-    else clearAddress();
+    else clearAddr();
   });
-
-  function formatPhone(v) {
-    v = v.replace(/\D/g, '').slice(0, 11);
-    if (v.length > 10) return `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
-    if (v.length > 6)  return `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
-    if (v.length > 2)  return `(${v.slice(0,2)}) ${v.slice(2)}`;
-    return v;
-  }
 
   document.getElementById('telefone').addEventListener('input', function () {
-    this.value = formatPhone(this.value);
+    let v = this.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 10) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    else if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
+    else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+    this.value = v;
   });
 
-  document.getElementById('form-endereco').addEventListener('submit', function (e) {
+  function toggleOther(selectId, otherId) {
+    const sel   = document.getElementById(selectId);
+    const other = document.getElementById(otherId);
+    const input = other.querySelector('input');
+    if (sel.value === 'Outra') {
+      other.style.display = 'block';
+      input.required = true;
+    } else {
+      other.style.display = 'none';
+      input.required = false;
+      input.value = '';
+    }
+  }
+
+  document.getElementById('form-principal').addEventListener('submit', async function (e) {
     e.preventDefault();
-    const dados = {
-      cep:          cepInput.value,
-      logradouro:   fields.logradouro.value,
-      numero:       document.getElementById('numero').value,
-      complemento:  document.getElementById('complemento').value,
-      bairro:       fields.bairro.value,
-      cidade:       fields.cidade.value,
-      estado:       fields.estado.value,
-      nome:         document.getElementById('nome').value,
-      telefone:     document.getElementById('telefone').value,
-      email:        document.getElementById('email').value,
+
+    const selects = this.querySelectorAll('select[required]');
+    let valid = true;
+    selects.forEach(s => {
+      if (!s.value) { s.style.borderColor = '#ef4444'; valid = false; }
+      else s.style.borderColor = '';
+    });
+    if (!valid) { alert('Por favor, preencha todos os campos obrigatórios.'); return; }
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    document.getElementById('error-banner').style.display = 'none';
+
+    const agora = new Date();
+    const data = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR');
+
+    const payload = {
+      data,
+      nome:        document.getElementById('nome').value,
+      email:       document.getElementById('email').value,
+      telefone:    document.getElementById('telefone').value,
+      unidade:     document.getElementById('unidade').value,
+      cep:         document.getElementById('cep').value,
+      logradouro:  document.getElementById('logradouro').value,
+      numero:      document.getElementById('numero').value,
+      complemento: document.getElementById('complemento').value,
+      bairro:      document.getElementById('bairro').value,
+      cidade:      document.getElementById('cidade').value,
+      estado:      document.getElementById('estado').value,
+      modal:       document.getElementById('modal').value === 'Outra'
+                     ? document.querySelector('[name="modal_outro"]').value
+                     : document.getElementById('modal').value,
+      tempo_ida:   document.getElementById('tempo_ida').value === 'Outra'
+                     ? document.querySelector('[name="tempo_ida_outro"]').value
+                     : document.getElementById('tempo_ida').value,
+      tempo_volta: document.getElementById('tempo_volta').value === 'Outra'
+                     ? document.querySelector('[name="tempo_volta_outro"]').value
+                     : document.getElementById('tempo_volta').value,
+      dist_ida:    document.getElementById('dist_ida').value === 'Outra'
+                     ? document.querySelector('[name="dist_ida_outro"]').value
+                     : document.getElementById('dist_ida').value,
+      dist_volta:  document.getElementById('dist_volta').value === 'Outra'
+                     ? document.querySelector('[name="dist_volta_outro"]').value
+                     : document.getElementById('dist_volta').value,
     };
-    document.getElementById('dados-enviados').textContent =
-      JSON.stringify(dados, null, 2);
-    const banner = document.getElementById('success-banner');
-    banner.style.display = 'block';
-    banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    document.getElementById('btn-submit').disabled = true;
+
+    try {
+      const res = await fetch(POWER_AUTOMATE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok || res.status === 202) {
+        document.getElementById('success-banner').style.display = 'block';
+        document.getElementById('success-banner').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        this.reset();
+        clearAddr();
+        document.querySelectorAll('.other-field').forEach(el => el.style.display = 'none');
+      } else {
+        throw new Error();
+      }
+    } catch {
+      document.getElementById('error-banner').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Enviar';
+    }
   });
 </script>
 </body>
